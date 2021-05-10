@@ -1,19 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShowUnlockText : MonoBehaviour
 {
-    private GameObject unlockText;
+    private Text unlockText;
 
     public GameObject[] doors;
 
     // Start is called before the first frame update
     void Start()
     {
-        unlockText = GameObject.FindGameObjectWithTag("UnlockText");
-        unlockText.SetActive(false);
-
+        unlockText = GameObject.FindGameObjectWithTag("UnlockText").GetComponent<Text>(); ;
+        unlockText.enabled = false;
     }
 
     // Update is called once per frame
@@ -24,11 +24,12 @@ public class ShowUnlockText : MonoBehaviour
         {
             if (doors[i].GetComponent<UnlockDoor>().playerNearDoor)
             {
-                unlockText.SetActive(true);
+                unlockText.enabled = true;
+                Debug.Log("Near: " + doors[i]);
             }
             else
             {
-                unlockText.SetActive(false);
+                unlockText.enabled = false;           
             }
         }
 

@@ -14,7 +14,9 @@ public class EnemySpawner : MonoBehaviour
 	private float zPos;
 	private MortalEntity mortalEntityRef;
 	private NavMeshAgent enemyAgent;
-	
+
+	int maxZombiesInWave = 20;
+	FMOD.Studio.EventInstance ambience;
 
     // Start is called before the first frame update
     void Start()
@@ -23,6 +25,7 @@ public class EnemySpawner : MonoBehaviour
 		enemyList = new List<GameObject>();
 		enemyAgent = enemy.GetComponent<NavMeshAgent>();
 		enemyAgent.speed = 1.8f;
+		ambience = GetComponent<FMODUnity.StudioEventEmitter>().EventInstance;
     }
 	
 	void Update()
@@ -31,7 +34,10 @@ public class EnemySpawner : MonoBehaviour
 		{
 			maxNumOfEnemies += 1;
 			EnemyDrop();
+			if (maxNumOfEnemies > maxZombiesInWave)
+				maxZombiesInWave = maxNumOfEnemies;
 		}
+		ambience.setProperty(0, maxZombiesInWave / enemyList.Count);
 	}
 	
 	void EnemyDrop()

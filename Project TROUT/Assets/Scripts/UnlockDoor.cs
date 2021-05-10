@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using FMODUnity;
+using UnityEngine.UI;
 
 public class UnlockDoor : MonoBehaviour
 {
@@ -17,19 +18,28 @@ public class UnlockDoor : MonoBehaviour
 	//Refernce to player for checking score / removing points
 	private GameObject player;
 
-	//Reference to event emitter
-	private StudioEventEmitter emitter;
 
 	//is the player touching a door?
 	public bool playerNearDoor = false;
+
+	// Text component to show the player how to open the door
+	private Text unlockText;
+
+	private string doorOpen = "event:/Doors/Door Open";
+	private string doorLocked = "event:/Doors/Door Closed";
+	private FMOD.Studio.EventInstance doorOpenEv;
+	private FMOD.Studio.EventInstance doorLockedEv;
 
     // Start is called before the first frame update
     void Start()
     {
         gameManagerSpawnsList = GameObject.Find("Game Manager").GetComponent<EnemySpawner>().spawnLocations;
 		player = GameObject.Find("Player");
-		emitter = GetComponent<StudioEventEmitter>();
-		emitter.Play();
+		unlockText = GameObject.FindGameObjectWithTag("UnlockText").GetComponent<Text>();
+		unlockText.text = "Press 'Space' to unlock for " + pointsCost + " points";
+		unlockText.enabled = false;
+		doorOpenEv = FMODUnity.RuntimeManager.CreateInstance(doorOpen);
+		doorLockedEv = FMODUnity.RuntimeManager.CreateInstance(doorLocked);
 	}
 
     // Update is called once per frame
@@ -40,7 +50,7 @@ public class UnlockDoor : MonoBehaviour
 			//Check if player has enough points, subtract and continue if they do
 			if (player.GetComponent<ScoreAndHealth>().points < pointsCost)
 			{
-				emitter.SetParameter("DoorLocked", 1);
+				doorLockedEv.start();
 				return;
 			}
 			player.GetComponent<ScoreAndHealth>().points -= pointsCost;
@@ -48,10 +58,12 @@ public class UnlockDoor : MonoBehaviour
 			for(int i = 0; i < newSpawnLocations.Length; i++)
 			{
 				//this makes it so unity prioritizes spawning zombies in the rooms the player opened recently
-				emitter.SetParameter("DoorOpened", 1);
-				gameManagerSpawnsList.Insert(0, newSpawnLocations[i]);
-			}
 				
+				gameManagerSpawnsList.Insert(0, newSpawnLocations[i]);
+				doorOpenEv.start();
+			}
+
+			unlockText.enabled = false;
 			GameObject.Destroy(this.gameObject);
 		}
     }
@@ -61,6 +73,8 @@ public class UnlockDoor : MonoBehaviour
 		if(other.gameObject.tag == "Player")
 		{
 			playerNearDoor = true;
+			unlockText.text = "Press 'Space' to unlock for " + pointsCost + " points";
+			unlockText.enabled = true;
 			Debug.Log("touching");
 		}
 		else
@@ -74,6 +88,7 @@ public class UnlockDoor : MonoBehaviour
 		if (other.gameObject.tag == "Player") 
 		{
 			playerNearDoor = false;
+			unlockText.enabled = false;
 		}
 	}
 }

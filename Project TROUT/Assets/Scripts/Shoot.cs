@@ -16,6 +16,10 @@ public class Shoot : MonoBehaviour
     protected LineRenderer laserLine;
     protected float nextFire;
 
+    private string bulletPing = "event:/Bullet Ricochet";
+    private string bulletHit = "event:/Blood Splatter";
+    private string bulletKill = "event:/Death Splatter";
+
     // Start is called before the first frame update
     void Start()
     {
@@ -57,7 +61,21 @@ public class Shoot : MonoBehaviour
 
                     //Make it 100 points if that enemy dies
                     if (hit.transform.GetComponent<MortalEntity>().Health <= 0)
+                    {
                         GetComponent<ScoreAndHealth>().Points += 90;
+                        //Play zombie death sound
+                        FMODUnity.RuntimeManager.PlayOneShot(bulletKill, hit.point);
+                    }
+                    else
+                    {
+                        //Play zombie hit sound
+                        FMODUnity.RuntimeManager.PlayOneShot(bulletHit, hit.point);
+                    }
+                }
+                else
+                {
+                    //Play bullet hit sound on hitlocation
+                    FMODUnity.RuntimeManager.PlayOneShot(bulletPing, hit.point);
                 }
             }
             else
@@ -76,7 +94,7 @@ public class Shoot : MonoBehaviour
             }
         }
 
-        text.text = currentGun.ammoLeft > 0 ? "Ammo: " + currentGun.ammoLeft : "";
+        text.text = currentGun.hasAmmo && currentGun.ammoLeft > 0 ? "Ammo: " + currentGun.ammoLeft : "";
     }
 
     // Shows the bullet trail

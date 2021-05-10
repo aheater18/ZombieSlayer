@@ -12,6 +12,7 @@ TagManager:
   - BottomRoomRespawn
   - UnlockText
   - Door
+  - HideOnUnpause
   layers:
   - Default
   - TransparentFX

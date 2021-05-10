@@ -20,7 +20,7 @@ public class PlayerHealth : MonoBehaviour
     private float betweenTimer = 0.0f;
     void Start()
     {
-        
+        health = GameObject.Find("Health").GetComponent<Text>();
     }
 
     void Update()
@@ -69,7 +69,8 @@ public class PlayerHealth : MonoBehaviour
                 betweenTimer = 0;
                 nextAttack = 0;
                 currentHP -= damage;
-                Debug.Log(currentHP);
+                FMODUnity.RuntimeManager.PlayOneShot("event:/Hurt");
+                //Debug.Log(currentHP);
             }
         }
     }
