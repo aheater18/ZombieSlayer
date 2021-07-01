@@ -5,15 +5,15 @@ using UnityEngine.AI;
 
 public class EnemySpawner : MonoBehaviour
 {
-	public GameObject enemy;
+	public List<GameObject> enemyType = new List<GameObject>(); 
 	public int maxNumOfEnemies = 0;
 	public float maxSpeed = 5.0f;
 	public List<GameObject> enemyList;
 	public List<GameObject> spawnLocations = new List<GameObject>();
 	private float xPos;
 	private float zPos;
-	private MortalEntity mortalEntityRef;
-	private NavMeshAgent enemyAgent;
+	private List<MortalEntity> mortalEntityRef = new List<MortalEntity>();
+	private List<NavMeshAgent> enemyAgent = new List<NavMeshAgent>();
 
 	int maxZombiesInWave = 20;
 	FMOD.Studio.EventInstance ambience;
@@ -21,10 +21,12 @@ public class EnemySpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-		mortalEntityRef = enemy.GetComponent<MortalEntity>();
+		for (int i = 0; i < enemyType.Count; i++)
+		{
+			mortalEntityRef[i] = enemyType[i].GetComponent<MortalEntity>();
+			enemyAgent[i] = enemyType[i].GetComponent<NavMeshAgent>();
+		}
 		enemyList = new List<GameObject>();
-		enemyAgent = enemy.GetComponent<NavMeshAgent>();
-		enemyAgent.speed = 1.8f;
 		ambience = GetComponent<FMODUnity.StudioEventEmitter>().EventInstance;
     }
 	
@@ -43,9 +45,12 @@ public class EnemySpawner : MonoBehaviour
 	void EnemyDrop()
 	{	
 		//difficulty so far is mostly increasing zombie speed after every wave
-		if(enemyAgent.speed <= maxSpeed)
+		foreach (NavMeshAgent agent in enemyAgent)
 		{
-			enemyAgent.speed += .2f ;
+			if(agent.speed <= maxSpeed)
+			{
+				agent.speed += .2f ;
+			}
 		}
 		
 		/*
@@ -75,7 +80,22 @@ public class EnemySpawner : MonoBehaviour
 				xPos = spawnLocations[randomSpawn].transform.position.x;
 				zPos = spawnLocations[randomSpawn].transform.position.z;
 			}
-			enemyList.Add(Instantiate(enemy, new Vector3(xPos, 1.5f, zPos), Quaternion.identity));
+			
+			//add new enemies to the fray after a certain amount of waves have passed
+			GameObject randomEnemy;
+			if(maxNumOfEnemies >= 5 && maxNumOfEnemies <= 9)
+			{
+				randomEnemy = enemyType[Random.Range(0, 2)];
+			}
+			else if (maxNumOfEnemies >= 10)
+			{
+				randomEnemy = enemyType[Random.Range(0, enemyType.Count)];
+			}
+			else
+			{
+				randomEnemy = enemyType[0];
+			}		
+			enemyList.Add(Instantiate(randomEnemy, new Vector3(xPos, 1.5f, zPos), Quaternion.identity));
 		}
 	}
 }
