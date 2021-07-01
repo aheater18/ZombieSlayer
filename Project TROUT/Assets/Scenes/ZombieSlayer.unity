@@ -8532,7 +8532,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25e368591419c6f408bb6bf2d1bf2a1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy: {fileID: 6281466478764546079, guid: d6dbcdaecce1fe642a69fc810c2aad1a, type: 3}
+  enemyType:
+  - {fileID: 6281466478764546079, guid: d6dbcdaecce1fe642a69fc810c2aad1a, type: 3}
+  - {fileID: 6921782358417668619, guid: 31ce730b5c0f8e945a237662734d4e95, type: 3}
+  - {fileID: 7398966339447325715, guid: 72e5948a76ab68e49b314bcbbf9b3cac, type: 3}
   maxNumOfEnemies: 0
   maxSpeed: 5
   enemyList: []
